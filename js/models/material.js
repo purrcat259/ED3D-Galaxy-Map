@@ -44,4 +44,11 @@ export default class Material {
             opacity: 0
         });
     }
+
+    static particle() {
+        return new THREE.PointsMaterial({
+            color: 0xeeeeee,
+            size: 2
+        });
+    }
 }

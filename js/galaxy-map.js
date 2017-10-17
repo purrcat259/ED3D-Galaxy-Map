@@ -29,6 +29,9 @@ export default class GalaxyMap {
         this.renderer = null;
         this.controls = null;
 
+        // Parts of Map
+        this.starField = null;
+
         this.jsonPath = null;
         this.jsonContainer = null;
         this.json = null;
@@ -93,6 +96,7 @@ export default class GalaxyMap {
         this.containerEl.appendChild(mapContainerEl);
         this.mapElement = mapContainerEl;
         this.loadDependencies();
+        this.setupEvents();
     }
 
     loadDependencies() {
@@ -123,6 +127,12 @@ export default class GalaxyMap {
             blending: THREE.AdditiveBlending,
             depthWrite: false,
             opacity: 0.5
+        });
+    }
+
+    setupEvents() {
+        window.addEventListener('resize', () => {
+            this.refresh3dMapSize();
         });
     }
 
@@ -175,5 +185,49 @@ export default class GalaxyMap {
 
     hideScene() {
         this.scene.visible = false;
+    }
+
+    addSkybox() {
+        // TODO: Make configurable
+        let starCount = 10000;
+        let particles = new THREE.Geometry();
+        for (let i = 0; i < 5; i++) {
+            let particle = new THREE.Vector3(
+                Math.random() * sizeStars - (sizeStars / 2),
+                Math.random() * sizeStars - (sizeStars / 2),
+                Math.random() * sizeStars - (sizeStars / 2)
+            );
+            particles.vertices.push(particle);
+        }
+
+        let particleMaterial = this.material.particle();
+        this.starField = new THREE.Points(particles, particleMaterial);
+        this.scene.add(this.starField);
+    }
+
+    render() {
+        this.renderer.render(this.scene, this.camera);
+    }
+
+    refresh3dMapSize() {
+        if (this.renderer) {
+            let width = container.offsetWidth > 100 ? container.offsetWidth : 100;
+            let height = container.offsetHeight > 100 > container.offsetHeight : 100;
+            this.renderer.setSize(width, height);
+            this.camera.aspect = width / height;
+            this.camera.updateProjectionMatrix();
+        }
+    }
+
+    calculateDistanceFromSol(target) {
+        let dx = target.x;
+        let dy = target.y;
+        let dz = target.z;
+
+        return Math.round(Math.sqrt(dx * dx + dy * dy + dz * dz));
+    }
+
+    animate() {
+        // TODO
     }
 }
