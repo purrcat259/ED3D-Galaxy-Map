@@ -1,4 +1,5 @@
 import Loader from './components/loader';
+import Material from './models/material';
 import * as THREE from 'three';
 
 // ThreeJS
@@ -44,26 +45,6 @@ export default class Ed3d {
         this.catObjs = [];
         this.catObjsRoutes = [];
 
-        // Materials
-        this.material = {
-            Trd: new THREE.MeshBasicMaterial({ color: 0xffffff }),
-            line: new THREE.LineBasicMaterial({ color: 0xcccccc }),
-            white: new THREE.MeshBasicMaterial({ color: 0xffffff }),
-            orange: new THREE.MeshBasicMaterial({ color: 0xFF9D00 }),
-            black: new THREE.MeshBasicMaterial({ color: 0x010101 }),
-            lightblue : new THREE.MeshBasicMaterial({ color: 0x0E7F88 }),
-            darkblue : new THREE.MeshBasicMaterial({ color: 0x16292B }),
-            selected : new THREE.MeshPhongMaterial({ color: 0x0DFFFF }),
-            grey : new THREE.MeshPhongMaterial({ color: 0x7EA0A0 }),
-            transparent : new THREE.MeshBasicMaterial({
-                color: 0x000000,
-                transparent: true,
-                opacity: 0
-            }),
-            glow_1: null,
-            custom: []
-        };
-
         this.starSprite = 'textures/lensflare/star_grey2.png';
 
         this.colors = [];
@@ -71,11 +52,6 @@ export default class Ed3d {
 
         // Default colour for system sprite
         this.systemColor = '#eeeeee';
-
-        // HUD
-        this.withHudPanel = false;
-        this.withOptionsPanel = true;
-        this.hudMultipleSelect = true;
 
         this.systems = [];
 
@@ -88,26 +64,17 @@ export default class Ed3d {
         // Graphical Options
         this.optDistObj = 1500;
 
-        this.playerPos = [0, 0, 0];
+        this.playerPos = {
+            x: 0,
+            y: 0:
+            z: 0
+        };
 
         this.cameraPos = null;
-
-        this.isTopView = false;
-
-        this.showGalaxyInfos = false;
 
         this.showNameNear = false;
 
         this.popupDetail = false;
-
-        // Objects
-        this.action = null;
-        this.galaxy = null;
-
-        this.withFullscreenToggle = false;
-
-        //-- Collapse subcategories (false: don't collapse)
-        this.categoryAutoCollapseSize = false;
     }
 
     init(options) {
