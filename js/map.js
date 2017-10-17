@@ -1,4 +1,4 @@
-import loader from 'components/loader';
+import Loader from './components/loader';
 import * as THREE from 'three';
 
 // ThreeJS
@@ -14,6 +14,9 @@ let composer;
 let container;
 let routes = [];
 let lensFlareSel;
+
+// UI
+let loader = new Loader();
 
 export default class Ed3d {
     constructor() {
@@ -127,6 +130,20 @@ export default class Ed3d {
     }
 
     rebuild(options) {
-        // TODO: create loader class
+        loader.start();
+
+        // Remove System & HUD filters
+        this.destroy();
+
+        // Reload from JSON
+        if (this.jsonPath !== null) {
+            this.loadDatasFromFile();
+        } else if (this.jsonContainer !== null) {
+            this.loadDatasFromContainer();
+        }
+
+        this.action.moveInitalPosition();
+
+        loader.stop();
     }
 }
