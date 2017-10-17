@@ -19,8 +19,8 @@ let lensFlareSel;
 let loader = new Loader();
 
 export default class Ed3d {
-    constructor() {
-        this.container = container;
+    constructor(containerEl) {
+        this.containerEl = containerEl;
         this.basePath = './';
 
         this.jsonPath = null;
