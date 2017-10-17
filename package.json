@@ -1,0 +1,26 @@
+{
+  "name": "ed3d-galaxy-map",
+  "version": "1.0.0",
+  "description": "Elite: Dangerous 3D map visualiser API (build with WebGL)",
+  "main": "js/ed3dmap.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/purrcat259/ED3D-Galaxy-Map.git"
+  },
+  "keywords": [
+    "elite",
+    "dangeroud",
+    "3d",
+    "map",
+    "galaxy"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/purrcat259/ED3D-Galaxy-Map/issues"
+  },
+  "homepage": "https://github.com/purrcat259/ED3D-Galaxy-Map#readme"
+}
