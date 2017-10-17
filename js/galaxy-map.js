@@ -1,4 +1,5 @@
 import Loader from './components/loader';
+import Logger from './util/logger';
 import Material from './models/material';
 import * as THREE from 'three';
 
@@ -18,6 +19,7 @@ let lensFlareSel;
 
 // UI
 let loader = new Loader();
+let logger = new Logger();
 
 export default class GalaxyMap {
     constructor(containerEl) {
@@ -32,6 +34,8 @@ export default class GalaxyMap {
         this.grid1K = null;
         this.grid1XL = null;
 
+        this.material = new Material();
+
         this.tween = null;
 
         this.globalView = true;
@@ -44,8 +48,6 @@ export default class GalaxyMap {
         // Object list by categories
         this.catObjs = [];
         this.catObjsRoutes = [];
-
-        this.starSprite = 'textures/lensflare/star_grey2.png';
 
         this.colors = [];
         this.textures = {};
@@ -78,6 +80,7 @@ export default class GalaxyMap {
     }
 
     init(options) {
+        logger.log('Initialising Galaxy Map');
         // Merge options with defaults
         options = Object.assign(this, options);
 
@@ -85,37 +88,37 @@ export default class GalaxyMap {
         let mapContainerEl = document.createElement('div');
         mapContainerEl.id = 'ed3dmap';
         this.containerEl.appendChild(mapContainerEl);
-
-        // Load map
-        this.launchMap();
+        this.loadDependencies();
     }
 
-    initObjects(options) {
-        // TODO: variables were not passed?
-        this.action = action;
-        this.galaxy = galaxy;
+    loadDependencies() {
+        logger.log('Loading Textures');
+        this.loadTextures();
+        logger.log('Loading Sprites');
+        this.loadSprites();
     }
 
-    rebuild(options) {
-        loader.start();
+    loadTextures() {
+        let textureLoader = new THREE.TextureLoader();
 
-        // Remove System & HUD filters
-        this.destroy();
-
-        // Reload from JSON
-        if (this.jsonPath !== null) {
-            this.loadDatasFromFile();
-        } else if (this.jsonContainer !== null) {
-            this.loadDatasFromContainer();
-        }
-
-        this.action.moveInitalPosition();
-
-        loader.stop();
+        this.textures.flare_white = textureLoader.load(`${this.basePath}textures/lensflare/flare2.png`);
+        this.textures.flare_center = textureLoader.load(`${this.basePath}textures/lensflare/flare3.png`);
+        this.textures.flare_yellow = textureLoader.load(`${this.basePath}textures/lensflare/star_grey2.png`);
     }
 
-    dstroy() {
-        loader.start();
-
+    loadSprites() {
+        this.material.glow_1 = new THREE.SpriteMaterial({
+            map: this.textures.flare_yellow,
+            color: 0xffffff,
+            transparent: false,
+            fog: true
+        });
+        this.material.glow_2 = new THREE.SpriteMaterial({
+            map: this.textures.flare_white,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            opacity: 0.5
+        });
     }
 }
