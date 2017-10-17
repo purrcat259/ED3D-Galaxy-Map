@@ -146,4 +146,9 @@ export default class Ed3d {
 
         loader.stop();
     }
+
+    dstroy() {
+        loader.start();
+
+    }
 }
