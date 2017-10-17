@@ -19,7 +19,7 @@ let lensFlareSel;
 // UI
 let loader = new Loader();
 
-export default class Ed3d {
+export default class GalaxyMap {
     constructor(containerEl) {
         this.containerEl = containerEl;
         this.basePath = './';
@@ -66,7 +66,7 @@ export default class Ed3d {
 
         this.playerPos = {
             x: 0,
-            y: 0:
+            y: 0,
             z: 0
         };
 

@@ -39,3 +39,17 @@ gulp.task('build', () => {
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./dist/'));
 });
+
+let demoFile = './js/demo.js';
+
+gulp.task('build_demo', () => {
+    let b = browserify(demoFile);
+    return b.transform(babelify)
+        .bundle()
+        .pipe(source(demoFile))
+        .pipe(buffer())
+        .pipe(rename(stripDirectory))
+        .pipe(sourcemaps.init({loadMaps: true}))
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('./dist/'));
+});
