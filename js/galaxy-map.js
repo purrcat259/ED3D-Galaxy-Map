@@ -84,7 +84,7 @@ export default class GalaxyMap {
         // Initialise 3D map container
         let mapContainerEl = document.createElement('div');
         mapContainerEl.id = 'ed3dmap';
-        this.container.appendChild(mapContainerEl);
+        this.containerEl.appendChild(mapContainerEl);
 
         // Load map
         this.launchMap();
