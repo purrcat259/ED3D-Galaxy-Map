@@ -13,7 +13,7 @@ let stripDirectory = (path) => {
     path.dirname = '';
 };
 
-gulp.task('build_js_dist', () => {
+gulp.task('build_dist', () => {
     let b = browserify(indexFile);
 
     return b
@@ -28,7 +28,7 @@ gulp.task('build_js_dist', () => {
         .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('build_js', () => {
+gulp.task('build', () => {
     let b = browserify(indexFile);
     return b.transform(babelify)
         .bundle()
