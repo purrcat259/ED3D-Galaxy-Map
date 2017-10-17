@@ -79,7 +79,7 @@ export default class GalaxyMap {
 
     init(options) {
         // Merge options with defaults
-        options = Object.extend(this, options);
+        options = Object.assign(this, options);
 
         // Initialise 3D map container
         let mapContainerEl = document.createElement('div');
