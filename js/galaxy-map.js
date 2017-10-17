@@ -4,11 +4,6 @@ import Material from './models/material';
 import * as THREE from 'three';
 
 // ThreeJS
-let camera;
-let controls;
-let scene;
-let light;
-let renderer;
 let raycaster;
 let composer;
 
@@ -24,7 +19,15 @@ let logger = new Logger();
 export default class GalaxyMap {
     constructor(containerEl) {
         this.containerEl = containerEl;
+        this.mapElement = null;
         this.basePath = './';
+
+        // Map Variables
+        this.scene = null;
+        this.camera - null;
+        this.light = null;
+        this.renderer = null;
+        this.controls = null;
 
         this.jsonPath = null;
         this.jsonContainer = null;
@@ -88,6 +91,7 @@ export default class GalaxyMap {
         let mapContainerEl = document.createElement('div');
         mapContainerEl.id = 'ed3dmap';
         this.containerEl.appendChild(mapContainerEl);
+        this.mapElement = mapContainerEl;
         this.loadDependencies();
     }
 
@@ -120,5 +124,56 @@ export default class GalaxyMap {
             depthWrite: false,
             opacity: 0.5
         });
+    }
+
+    initScene() {
+        this.scene = new THREE.Scene();
+        this.hideScene();
+        this.camera = new THREE.PerspectiveCamera(
+            45,
+            container.offsetWidth / container.offsetHeight,
+            1,
+            200000
+        );
+        this.camera.position.set(0, 500, 500);
+
+        // Hemisphere light
+        this.light = new THREE.HemisphereLight(0xffffff, 0xcccccc);
+        this.light.position.set(-0.2, 0.5, 0.8).normalize();
+        this.scene.add(light);
+
+        // WebGL renderer
+        this.renderer = new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true
+        });
+        this.renderer.setClearColor(0x000000, 1);
+        this.renderer.setSize(container.offsetWidth, container.offsetHeight);
+        this.renderer.domElement.style.zIndex = 5;
+        this.mapElement.appendChild(this.renderer.domElement);
+
+        // Controls
+        this.controls = new THREE.OrbitControls(this.camera, this.mapElement);
+        this.controls.rotateSpeed = 0.6;
+        this.controls.zoomSpeed = 2.0;
+        this.controls.panSpeed = 0.8;
+        this.controls.maxDistance = 60000;
+        this.controls.enableZoom = 1;
+        this.controls.enablePan = 1;
+        this.controls.enableDamping = !0;
+        this.controls.dampingFactor = 0.3;
+
+        // Add Fog
+        this.scene.fog = new THREE.FogExp2(0x0D0D10, 0.000128);
+        this.renderer.setClearColor(this.scene.fog.color, 1);
+        this.fogDensity = this.scene.fog.density;
+    }
+
+    showScene() {
+        this.scene.visible = true;
+    }
+
+    hideScene() {
+        this.scene.visible = false;
     }
 }
