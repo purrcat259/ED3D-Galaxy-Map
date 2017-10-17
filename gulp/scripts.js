@@ -7,7 +7,7 @@ import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
 import sourcemaps from 'gulp-sourcemaps';
 
-let indexFile = './js/map.js';
+let indexFile = './js/galaxy-map.js';
 
 let stripDirectory = (path) => {
     path.dirname = '';
