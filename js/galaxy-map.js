@@ -1,6 +1,7 @@
 import Loader from './components/loader';
 import Logger from './util/logger';
 import Material from './models/material';
+import Action from './models/action';
 import * as THREE from 'three';
 
 // ThreeJS
@@ -79,8 +80,6 @@ export default class GalaxyMap {
         };
 
         this.cameraPos = null;
-
-        this.showNameNear = false;
 
         this.popupDetail = false;
     }
@@ -212,7 +211,7 @@ export default class GalaxyMap {
     refresh3dMapSize() {
         if (this.renderer) {
             let width = container.offsetWidth > 100 ? container.offsetWidth : 100;
-            let height = container.offsetHeight > 100 > container.offsetHeight : 100;
+            let height = container.offsetHeight > 100 ? container.offsetHeight : 100;
             this.renderer.setSize(width, height);
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
