@@ -4,6 +4,8 @@ import Material from './models/material';
 import Action from './models/action';
 import System from './models/system';
 import Grid from './models/grid';
+import Galaxy from './models/galaxy';
+import Action from './models/action';
 import * as THREE from 'three';
 import OrbitControlsFactory from 'three-orbit-controls';
 import TWEEN from '@tweenjs/tween.js';
@@ -254,7 +256,7 @@ export default class GalaxyMap {
         // TODO: See if HUD is needed
 
         logger.log('Adding Galactic centre');
-        
+
     }
 
     // Move the camera to a target
