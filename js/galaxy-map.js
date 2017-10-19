@@ -3,6 +3,7 @@ import Logger from './util/logger';
 import Material from './models/material';
 import Action from './models/action';
 import System from './models/system';
+import Grid from './models/grid';
 import * as THREE from 'three';
 import OrbitControlsFactory from 'three-orbit-controls';
 
@@ -238,5 +239,7 @@ export default class GalaxyMap {
         // this.initObjects();
         logger.log('Initialising Scene');
         this.initScene();
+        // Create Grid
+
     }
 }
