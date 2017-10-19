@@ -24,6 +24,10 @@ export default class GalaxyMap {
         this.mapElement = null;
         this.basePath = './';
 
+        // Galaxy variables
+        this.action = new Action(this);
+        this.system = new System(this);
+
         // Map Variables
         this.scene = null;
         this.camera - null;
