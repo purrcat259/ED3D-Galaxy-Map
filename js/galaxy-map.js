@@ -6,6 +6,7 @@ import System from './models/system';
 import Grid from './models/grid';
 import * as THREE from 'three';
 import OrbitControlsFactory from 'three-orbit-controls';
+import TWEEN from '@tweenjs/tween.js';
 
 let OrbitControls = OrbitControlsFactory(THREE);
 
@@ -51,8 +52,6 @@ export default class GalaxyMap {
         this.grid1XL = null;
 
         this.material = new Material();
-
-        this.tween = null;
 
         this.globalView = true;
 
@@ -242,15 +241,31 @@ export default class GalaxyMap {
         this.initScene();
 
         // Create Grid
+        logger.log('Creating Grid');
         this.grid1H = new Grid(this).init(100, 0x111E23, 0);
         this.grid1K = new Grid(this).init(1000, 0x22323A, 1000);
         this.grid1XL = new Grid(this).init(10000, 0x22323A, 10000);
 
         // Add the skybox
+        logger.log('Adding Skybox');
         this.addSkybox();
 
         // Create HUD
+        // TODO: See if HUD is needed
 
-        // TODO
+        logger.log('Adding Galactic centre');
+        
+    }
+
+    // Move the camera to a target
+    moveCamera(from, to) {
+        let tween = new TWEEN.Tween(from, { override: true }).to(to, 800)
+            .start()
+            .onUpdate(() => {
+                this.camera.position.set(from.x, from.y, from.z);
+            })
+            .onComplete(() => {
+                this.controls.update();
+            });
     }
 }
