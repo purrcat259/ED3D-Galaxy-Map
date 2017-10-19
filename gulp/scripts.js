@@ -42,7 +42,7 @@ gulp.task('build', () => {
 
 let demoFile = './js/demo.js';
 
-gulp.task('build_demo', ['build'], () => {
+gulp.task('build_demo', ['build', 'build_server'], () => {
     let b = browserify(demoFile);
     return b.transform(babelify)
         .bundle()
