@@ -26,12 +26,12 @@ export default class Galaxy {
     addGalaxyCenter() {
         let settings = {
             name: 'Sagittarius A*',
-            coords = {
+            coords: {
                 x: this.y, // Why is x assigned y?
                 y: this.y,
                 z: this.z
             },
-            cat = []
+            cat: []
         };
 
         this.obj = this.galaxyMap.system.create(settings, true);

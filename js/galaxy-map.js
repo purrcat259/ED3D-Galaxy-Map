@@ -5,7 +5,6 @@ import Action from './models/action';
 import System from './models/system';
 import Grid from './models/grid';
 import Galaxy from './models/galaxy';
-import Action from './models/action';
 import * as THREE from 'three';
 import OrbitControlsFactory from 'three-orbit-controls';
 import TWEEN from '@tweenjs/tween.js';

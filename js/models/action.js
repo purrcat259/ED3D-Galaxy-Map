@@ -157,7 +157,7 @@ export default class Action {
             left: mapEl.offsetLeft
         };
         let scrollPos = document.scrollTop;
-        position.top = -= scrollPos;
+        position.top -= scrollPos;
 
         obj.mouseVector = new Vector3(
             ( ( e.clientX - position.left ) / renderer.domElement.width ) * 2 - 1,
@@ -236,7 +236,7 @@ export default class Action {
             left: mapEl.offsetLeft
         };
         let scrollPos = document.scrollTop;
-        position.top = -= scrollPos;
+        position.top -= scrollPos;
 
         obj.mouseVector = new Vector3(
             ( ( e.clientX - position.left ) / renderer.domElement.width ) * 2 - 1,
