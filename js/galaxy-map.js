@@ -4,13 +4,15 @@ import Material from './models/material';
 import Action from './models/action';
 import System from './models/system';
 import * as THREE from 'three';
+import OrbitControlsFactory from 'three-orbit-controls';
+
+let OrbitControls = OrbitControlsFactory(THREE);
 
 // ThreeJS
 let raycaster;
 let composer;
 
 // Map
-let container;
 let routes = [];
 let lensFlareSel;
 
@@ -142,7 +144,7 @@ export default class GalaxyMap {
         this.hideScene();
         this.camera = new THREE.PerspectiveCamera(
             45,
-            container.offsetWidth / container.offsetHeight,
+            this.containerEl.offsetWidth / this.containerEl.offsetHeight,
             1,
             200000
         );
@@ -151,7 +153,7 @@ export default class GalaxyMap {
         // Hemisphere light
         this.light = new THREE.HemisphereLight(0xffffff, 0xcccccc);
         this.light.position.set(-0.2, 0.5, 0.8).normalize();
-        this.scene.add(light);
+        this.scene.add(this.light);
 
         // WebGL renderer
         this.renderer = new THREE.WebGLRenderer({
@@ -159,12 +161,12 @@ export default class GalaxyMap {
             alpha: true
         });
         this.renderer.setClearColor(0x000000, 1);
-        this.renderer.setSize(container.offsetWidth, container.offsetHeight);
+        this.renderer.setSize(this.containerEl.offsetWidth, this.containerEl.offsetHeight);
         this.renderer.domElement.style.zIndex = 5;
         this.mapElement.appendChild(this.renderer.domElement);
 
         // Controls
-        this.controls = new THREE.OrbitControls(this.camera, this.mapElement);
+        this.controls = new OrbitControls(this.camera, this.mapElement);
         this.controls.rotateSpeed = 0.6;
         this.controls.zoomSpeed = 2.0;
         this.controls.panSpeed = 0.8;
@@ -212,8 +214,8 @@ export default class GalaxyMap {
 
     refresh3dMapSize() {
         if (this.renderer) {
-            let width = container.offsetWidth > 100 ? container.offsetWidth : 100;
-            let height = container.offsetHeight > 100 ? container.offsetHeight : 100;
+            let width = this.containerEl.offsetWidth > 100 ? this.containerEl.offsetWidth : 100;
+            let height = this.containerEl.offsetHeight > 100 ? this.containerEl.offsetHeight : 100;
             this.renderer.setSize(width, height);
             this.camera.aspect = width / height;
             this.camera.updateProjectionMatrix();
@@ -233,8 +235,8 @@ export default class GalaxyMap {
     }
 
     launchMap() {
-        logger.log('Launching map');
         // this.initObjects();
-
+        logger.log('Initialising Scene');
+        this.initScene();
     }
 }
