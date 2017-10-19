@@ -1,4 +1,4 @@
-import { Vector3, Sprite, SphereGeometry, Mesh, VertexColors, AdditiveBlending, Points } from 'three';
+import { Geometry, Vector3, Sprite, SphereGeometry, Mesh, VertexColors, AdditiveBlending, Points } from 'three';
 
 export default class System {
     constructor(galaxyMap) {

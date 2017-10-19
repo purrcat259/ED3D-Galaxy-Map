@@ -231,4 +231,10 @@ export default class GalaxyMap {
     animate() {
         // TODO
     }
+
+    launchMap() {
+        logger.log('Launching map');
+        // this.initObjects();
+
+    }
 }
