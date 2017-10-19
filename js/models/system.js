@@ -59,7 +59,7 @@ export default class System {
             this.count++;
 
             if (withSolid) {
-                let sprite = new Sprite(this.galaxyMap.material.glow_1;
+                let sprite = new Sprite(this.galaxyMap.material.glow_1);
                 sprite.position.set(x, y, z);
                 sprite.scale.set(50, 50, 1.0);
                 this.galaxyMap.scene.add(sprite);
