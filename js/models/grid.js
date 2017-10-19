@@ -3,7 +3,7 @@ import { GridHelper, Geometry, Vector3, LineSegments, FontUtils, ShapeGeometry }
 export default class Grid {
     constructor(galaxyMap) {
         this.galaxyMap = galaxyMap;
-        this.scene = galaxyMap.scene;
+        this.scene = this.galaxyMap.scene;
 
         this.obj = null;
         this.size = null;
@@ -23,6 +23,7 @@ export default class Grid {
         this.size = size;
 
         this.obj = new GridHelper(1000000, size);
+        // TODO: This is deprecated
         this.obj.setColors(colour, colour);
         this.obj.minDistView = minDistView;
         this.obj.customUpdateCallback = this.addCoords;

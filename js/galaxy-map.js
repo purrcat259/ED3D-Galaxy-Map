@@ -198,14 +198,14 @@ export default class GalaxyMap {
         let particles = new THREE.Geometry();
         for (let i = 0; i < 5; i++) {
             let particle = new THREE.Vector3(
-                Math.random() * sizeStars - (sizeStars / 2),
-                Math.random() * sizeStars - (sizeStars / 2),
-                Math.random() * sizeStars - (sizeStars / 2)
+                Math.random() * starCount - (starCount / 2),
+                Math.random() * starCount - (starCount / 2),
+                Math.random() * starCount - (starCount / 2)
             );
             particles.vertices.push(particle);
         }
 
-        let particleMaterial = this.material.particle();
+        let particleMaterial = Material.particle();
         this.starField = new THREE.Points(particles, particleMaterial);
         this.scene.add(this.starField);
     }
@@ -242,9 +242,9 @@ export default class GalaxyMap {
         this.initScene();
 
         // Create Grid
-        this.grid1H = new Grid(100, 0x111E23, 0).init();
-        this.grid1K = new Grid(1000, 0x22323A, 1000).init();
-        this.grid1XL = new Grid(10000, 0x22323A, 10000).init();
+        this.grid1H = new Grid(this).init(100, 0x111E23, 0);
+        this.grid1K = new Grid(this).init(1000, 0x22323A, 1000);
+        this.grid1XL = new Grid(this).init(10000, 0x22323A, 10000);
 
         // Add the skybox
         this.addSkybox();

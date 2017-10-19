@@ -1,4 +1,4 @@
-import { MeshBasicMaterial, MeshPhongMaterial, LineBasicMaterial, AdditiveBlending } from 'three';
+import { MeshBasicMaterial, MeshPhongMaterial, LineBasicMaterial, AdditiveBlending, PointsMaterial } from 'three';
 
 export default class Material {
     static trd() {
