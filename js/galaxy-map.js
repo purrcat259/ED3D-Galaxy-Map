@@ -2,6 +2,7 @@ import Loader from './components/loader';
 import Logger from './util/logger';
 import Material from './models/material';
 import Action from './models/action';
+import System from './models/system';
 import * as THREE from 'three';
 
 // ThreeJS
@@ -58,9 +59,6 @@ export default class GalaxyMap {
 
         this.colors = [];
         this.textures = {};
-
-        // Default colour for system sprite
-        this.systemColor = '#eeeeee';
 
         this.systems = [];
 

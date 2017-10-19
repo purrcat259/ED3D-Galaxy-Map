@@ -1,7 +1,11 @@
+import { Vector3, Sprite, SphereGeometry, Mesh, VertexColors, AdditiveBlending, Points } from 'three';
+
 export default class System {
-    constructor() {
+    constructor(galaxyMap) {
+        this.galaxyMap = galaxyMap;
         this.particle = null;
-        this.particleGeo = null;
+        this.particleGeo = new Geometry();;
+        this.systemColor = '#eeeeee';
         this.particleColor = [];
         this.particleInfos = [];
         this.count = 0;
@@ -29,11 +33,77 @@ export default class System {
                 this.particleGeo.vertices[indexParticle].infos += val.infos;
                 if (val.cat) {
                     // TODO: Needs access to Ed3d
-                    // Ed3d.addObjToCategories(indexParticle,val.cat);
+                    this.galaxyMap.addObjToCategories(indexParticle, val.cat);
                 }
                 return;
             }
-        }
 
+            let particle = new Vector3(x, y, z);
+
+            // attach name and set as clickable
+
+            particle.clickable = true;
+            particle.visible = true;
+            particle.name = val.name;
+            if (val.infos) {
+                particle.infos = val.infos;
+                this.particleINfos[systemId] = this.count;
+            }
+
+            if (val.url) {
+                particle.url = val.url;
+            }
+
+            this.particleGeo.vertices.push(particle);
+
+            this.count++;
+
+            if (withSolid) {
+                let sprite = new Sprite(this.galaxyMap.material.glow_1;
+                sprite.position.set(x, y, z);
+                sprite.scale.set(50, 50, 1.0);
+                this.galaxyMap.scene.add(sprite);
+
+                // Sphere
+
+                let geometry = new SphereGeometry(2, 10, 10);
+                let sphere = new Mesh(geometry, this.galaxyMap.material.white());
+
+                sphere.position.set(x, y, z);
+                sphere.name = val.name;
+                sphere.clickable = true;
+                sphere.idsprite = sprite.id;
+                this.galaxyMap.scene.add(sphere);
+
+                return sphere;
+            }
+        }
+    }
+
+    endParticleSystem() {
+        let particleMaterial = new PointsMaterial({
+            map: this.galaxyMap.textures.flare_yellow,
+            vertexColors: VertexColors,
+            size: this.scaleSize,
+            fog: false,
+            blending: AdditiveBlending,
+            transparent: true,
+            depthTest: true,
+            depthWrite: false
+        });
+
+        this.particle = new Points(this.particleGeo, particleMaterial);
+
+        this.particle.sortParticles = true;
+        this.particle.clickable = true;
+
+        this.scene.add(this.particle);
+    }
+
+    remove() {
+        this.particleColor = [];
+        this.particleGeo = null;
+        this.count = 0;
+        this.scene.remove(this.particle);
     }
 }
