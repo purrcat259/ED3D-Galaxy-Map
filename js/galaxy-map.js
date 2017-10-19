@@ -30,6 +30,7 @@ export default class GalaxyMap {
         // Galaxy variables
         this.action = new Action(this);
         this.system = new System(this);
+        this.grid = new Grid(this);
 
         // Map Variables
         this.scene = null;
@@ -239,7 +240,17 @@ export default class GalaxyMap {
         // this.initObjects();
         logger.log('Initialising Scene');
         this.initScene();
-        // Create Grid
 
+        // Create Grid
+        this.grid1H = new Grid(100, 0x111E23, 0).init();
+        this.grid1K = new Grid(1000, 0x22323A, 1000).init();
+        this.grid1XL = new Grid(10000, 0x22323A, 10000).init();
+
+        // Add the skybox
+        this.addSkybox();
+
+        // Create HUD
+
+        // TODO
     }
 }

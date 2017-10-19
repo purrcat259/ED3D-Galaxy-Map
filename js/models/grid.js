@@ -127,4 +127,20 @@ export default class Grid {
             this.scene.add(this.coordGrid);
         }
     }
+
+    toggleGrid() {
+        this.visible = !this.visible;
+        this.obj.visible = this.visible;
+    }
+
+    show() {
+        if (!this.visible) {
+            return;
+        }
+        this.obj.visible = true;
+    }
+
+    hide() {
+        this.obj.visible = false;
+    }
 }
