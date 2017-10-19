@@ -34,6 +34,7 @@ export default class GalaxyMap {
         this.action = new Action(this);
         this.system = new System(this);
         this.grid = new Grid(this);
+        this.galaxy = new Galaxy(this);
 
         // Map Variables
         this.scene = null;
@@ -233,10 +234,6 @@ export default class GalaxyMap {
         return Math.round(Math.sqrt(dx * dx + dy * dy + dz * dz));
     }
 
-    animate() {
-        // TODO
-    }
-
     launchMap() {
         // this.initObjects();
         logger.log('Initialising Scene');
@@ -256,7 +253,20 @@ export default class GalaxyMap {
         // TODO: See if HUD is needed
 
         logger.log('Adding Galactic centre');
+        this.galaxy.addGalaxyCenter();
 
+        // TODO: Add system loading
+
+        if (!this.startAnim) {
+            this.grid1XL.hide();
+            this.galaxy.milkyway2D.visible = false;
+        }
+
+        animate();
+    }
+
+    animate() {
+        // TODO
     }
 
     // Move the camera to a target
