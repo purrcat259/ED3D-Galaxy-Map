@@ -165,7 +165,7 @@ export default class GalaxyMap {
         });
         this.renderer.setClearColor(0x000000, 1);
         this.renderer.setSize(this.containerEl.offsetWidth, this.containerEl.offsetHeight);
-        this.renderer.domElement.style.zIndex = 5;
+        // this.renderer.domElement.style.zIndex = 5;
         this.mapElement.appendChild(this.renderer.domElement);
 
         // Controls
@@ -294,13 +294,15 @@ export default class GalaxyMap {
 
         for (let i = 0; i < systemData.length; i++) {
             let sysData = systemData[i];
-            let sys = this.system.create(sysData);
+            let sys = this.system.create(sysData, true);
             if (sys) {
                 this.systems.push(sys);
             }
         }
 
         this.loadDataComplete();
+
+        this.showScene();
     }
 
     loadDataComplete() {
