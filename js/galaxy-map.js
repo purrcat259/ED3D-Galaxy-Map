@@ -311,8 +311,38 @@ export default class GalaxyMap {
         logger.log('Data loading complete');
     }
 
-    animate() {
-        // TODO
+    animate(time) {
+        if (!this.scene.visible) {
+            this.requestAnimationFrame(animate);
+            return;
+        }
+
+        this.refreshWithCamPos();
+        this.controls.update();
+
+        TWEEN.update(time);
+
+        this.render();
+
+        this.starfield.position.set(
+            this.controls.target.x - (this.controls.target.x / 10) % 4000,
+            this.controls.target.y - (this.controls.target.y / 10) % 4000,
+            this.controls.target.z - (this.controls.target.z / 10) % 4000
+        );
+
+        let scale = this.distanceFromTarget(camera) / 200;
+
+        this.action.updateCursorSize(scale);
+
+        // HUD stuff
+
+        this.action.sizeOnScroll(scale);
+
+        this.galaxy.infosUpdateCallback(scale);
+
+        this.action.updatePointClickRadius(scale);
+
+        requestAnimationFrame(animate)
     }
 
     // Move the camera to a target
@@ -325,5 +355,38 @@ export default class GalaxyMap {
             .onComplete(() => {
                 this.controls.update();
             });
+    }
+
+    distanceFromTarget(v1) {
+        var dx = v1.position.x - this.controls.target.x;
+        var dy = v1.position.y - this.controls.target.y;
+        var dz = v1.position.z - this.controls.target.z;
+
+        return Math.round(Math.sqrt(dx*dx+dy*dy+dz*dz));
+    }
+
+    refreshWithCamPos() {
+        var d = new Date();
+        var n = d.getTime();
+
+        //-- Refresh only every 5 sec
+        if(n % 1 != 0) return;
+
+        this.grid1H.addCoords();
+        this.grid1K.addCoords();
+
+        //-- Refresh only if the camera moved
+        var p = this.optDistObj/2;
+        if(
+          camSave.x == Math.round(this.camera.position.x/p)*p &&
+          camSave.y == Math.round(this.camera.position.y/p)*p &&
+          camSave.z == Math.round(this.camera.position.z/p)*p
+        ) return;
+
+        //-- Save new pos
+
+        camSave.x = Math.round(this.camera.position.x/p)*p;
+        camSave.y = Math.round(this.camera.position.y/p)*p;
+        camSave.z = Math.round(this.camera.position.z/p)*p;
     }
 }

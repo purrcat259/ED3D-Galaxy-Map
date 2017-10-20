@@ -5,4 +5,4 @@ let mapEl = document.getElementById('galaxyMap');
 let map = new GalaxyMap(mapEl);
 map.init();
 map.launchMap();
-map.render();
+// map.animate();
