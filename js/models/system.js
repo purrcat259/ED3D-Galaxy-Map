@@ -1,4 +1,5 @@
 import { Geometry, Vector3, Sprite, SphereGeometry, Mesh, VertexColors, AdditiveBlending, Points } from 'three';
+import Material from './material';
 
 export default class System {
     constructor(galaxyMap) {
@@ -67,7 +68,7 @@ export default class System {
                 // Sphere
 
                 let geometry = new SphereGeometry(2, 10, 10);
-                let sphere = new Mesh(geometry, this.galaxyMap.material.white());
+                let sphere = new Mesh(geometry, Material.white());
 
                 sphere.position.set(x, y, z);
                 sphere.name = val.name;
