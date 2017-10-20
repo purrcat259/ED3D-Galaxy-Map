@@ -31,13 +31,14 @@ export default class Action {
 
     init() {
         let self = this;
-        container.addEventListener('mousedown', (e) => {
+        let container = this.galaxyMap.mapElement;
+        container.addEventListener('mousedown', (e, obj) => {
             self.onMouseDown(e, obj);
         }, false);
-        container.addEventListener('mouseup', (e) => {
+        container.addEventListener('mouseup', (e, obj) => {
             self.onMouseUp(e, obj);
         }, false);
-        container.addEventListener('mousemove', (e) => {
+        container.addEventListener('mousemove', (e, obj) => {
             self.onMouseHover(e, obj);
         }, false);
 

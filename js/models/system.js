@@ -1,4 +1,14 @@
-import { Geometry, Vector3, Sprite, SphereGeometry, Mesh, VertexColors, AdditiveBlending, Points } from 'three';
+import {
+    Geometry,
+    Vector3,
+    Sprite,
+    SphereGeometry,
+    Mesh,
+    VertexColors,
+    AdditiveBlending,
+    Points,
+    PointsMaterial
+} from 'three';
 import Material from './material';
 
 export default class System {
@@ -81,6 +91,10 @@ export default class System {
         }
     }
 
+    initParticleSystem() {
+        this.particleGeo = new Geometry;
+    }
+
     endParticleSystem() {
         let particleMaterial = new PointsMaterial({
             map: this.galaxyMap.textures.flare_yellow,
@@ -98,13 +112,13 @@ export default class System {
         this.particle.sortParticles = true;
         this.particle.clickable = true;
 
-        this.scene.add(this.particle);
+        this.galaxyMap.scene.add(this.particle);
     }
 
     remove() {
         this.particleColor = [];
         this.particleGeo = null;
         this.count = 0;
-        this.scene.remove(this.particle);
+        this.galaxyMap.scene.remove(this.particle);
     }
 }

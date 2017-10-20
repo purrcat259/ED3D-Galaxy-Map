@@ -255,13 +255,58 @@ export default class GalaxyMap {
         this.galaxy.addGalaxyCenter();
 
         // TODO: Add system loading
+        this.loadData();
 
         if (!this.startAnim) {
             this.grid1XL.hide();
             this.galaxy.milkyway2D.visible = false;
         }
 
-        animate();
+        this.animate();
+    }
+
+    loadData() {
+        // Init particle system
+        this.system.initParticleSystem();
+
+        let systemData = [
+            {
+                name: 'Sol',
+                coords: {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                }
+            },
+            {
+                name: 'Solati',
+                coords: {
+                    x: 66.53125,
+                    y: 29.1875,
+                    z: 34.6875
+                }
+            }
+        ];
+
+        logger.log('Loading system data');
+
+        // Create systems
+
+        for (let i = 0; i < systemData.length; i++) {
+            let sysData = systemData[i];
+            let sys = this.system.create(sysData);
+            if (sys) {
+                this.systems.push(sys);
+            }
+        }
+
+        this.loadDataComplete();
+    }
+
+    loadDataComplete() {
+        this.system.endParticleSystem();
+        this.action.init();
+        logger.log('Data loading complete');
     }
 
     animate() {
