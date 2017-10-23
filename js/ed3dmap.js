@@ -141,455 +141,455 @@ class Ed3d {
    *
    */
 
-  'init' : function(options) {
+    init(options) {
+        this.options = options;
 
-    // Merge options with defaults Ed3d
-    var options = $.extend(Ed3d, options);
+        //-- Init 3D map container
+        let mapDiv = document.createElement('div');
+        mapDiv.id = 'ed3dmap';
+        let containerEl = documet.getElementById(this.container);
+        containerEl.appendChild(mapDiv);
 
-    //-- Init 3D map container
-    $('#'+Ed3d.container).append('<div id="ed3dmap"></div>');
+        //-- Load dependencies
+        Loader.update('Load core files');
 
+        if(typeof isMinified !== 'undefined') return Ed3d.launchMap();
 
-    //-- Load dependencies
-    Loader.update('Load core files');
+        // Dependencies will be bundled
+        // $.when(
+        //
+        //     $.getScript(Ed3d.basePath + "vendor/three-js/OrbitControls.js"),
+        //     $.getScript(Ed3d.basePath + "vendor/three-js/CSS3DRenderer.js"),
+        //     $.getScript(Ed3d.basePath + "vendor/three-js/Projector.js"),
+        //     $.getScript(Ed3d.basePath + "vendor/three-js/FontUtils.js"),
+        //     $.getScript(Ed3d.basePath + "vendor/three-js/helvetiker_regular.typeface.js"),
+        //
+        //     $.getScript(Ed3d.basePath + "js/components/grid.class.js"),
+        //     $.getScript(Ed3d.basePath + "js/components/icon.class.js"),
+        //     $.getScript(Ed3d.basePath + "js/components/hud.class.js"),
+        //     $.getScript(Ed3d.basePath + "js/components/action.class.js"),
+        //     $.getScript(Ed3d.basePath + "js/components/route.class.js"),
+        //     $.getScript(Ed3d.basePath + "js/components/system.class.js"),
+        //     $.getScript(Ed3d.basePath + "js/components/galaxy.class.js"),
+        //     $.getScript(Ed3d.basePath + "js/components/heat.class.js"),
+        //
+        //     $.getScript(Ed3d.basePath + "vendor/tween-js/Tween.js"),
+        //
+        //     $.Deferred(function( deferred ){
+        //         $( deferred.resolve );
+        //     })
+        //
+        // ).done(function() {
+        //
+        //   Loader.update('Done !');
+        //   Ed3d.launchMap();
+        //
+        // });
 
-    if(typeof isMinified !== 'undefined') return Ed3d.launchMap();
-
-    $.when(
-
-        $.getScript(Ed3d.basePath + "vendor/three-js/OrbitControls.js"),
-        $.getScript(Ed3d.basePath + "vendor/three-js/CSS3DRenderer.js"),
-        $.getScript(Ed3d.basePath + "vendor/three-js/Projector.js"),
-        $.getScript(Ed3d.basePath + "vendor/three-js/FontUtils.js"),
-        $.getScript(Ed3d.basePath + "vendor/three-js/helvetiker_regular.typeface.js"),
-
-        $.getScript(Ed3d.basePath + "js/components/grid.class.js"),
-        $.getScript(Ed3d.basePath + "js/components/icon.class.js"),
-        $.getScript(Ed3d.basePath + "js/components/hud.class.js"),
-        $.getScript(Ed3d.basePath + "js/components/action.class.js"),
-        $.getScript(Ed3d.basePath + "js/components/route.class.js"),
-        $.getScript(Ed3d.basePath + "js/components/system.class.js"),
-        $.getScript(Ed3d.basePath + "js/components/galaxy.class.js"),
-        $.getScript(Ed3d.basePath + "js/components/heat.class.js"),
-
-        $.getScript(Ed3d.basePath + "vendor/tween-js/Tween.js"),
-
-        $.Deferred(function( deferred ){
-            $( deferred.resolve );
-        })
-
-    ).done(function() {
-
-      Loader.update('Done !');
-      Ed3d.launchMap();
-
-    });
-
-  },
-
-  /**
-   * Init objects
-   */
-
-  'initObjects' : function(options) {
-
-    //-- Init Object
-    this.Action = Action;
-    this.Galaxy = Galaxy;
-
-  },
-
-  /**
-   * Rebuild completely system list and filter (for new JSon content)
-   */
-
-  'rebuild' : function(options) {
-
-    Loader.start();
-
-    // Remove System & HUD filters
-    this.destroy();
-
-    // Reload from JSon
-    if(this.jsonPath != null) Ed3d.loadDatasFromFile();
-    else if(this.jsonContainer != null) Ed3d.loadDatasFromContainer();
-
-    this.Action.moveInitalPosition();
-
-    Loader.stop();
-
-  },
-
-  /**
-   * Destroy the 3dmap
-   */
-
-  'destroy' : function() {
-
-    Loader.start();
-
-    // Remove System & HUD filters
-    System.remove();
-    HUD.removeFilters();
-    Route.remove();
-    Galaxy.remove();
-
-    Loader.stop();
-
-  },
-
-  /**
-   * Launch
-   */
-
-  'launchMap' : function() {
-
-    this.initObjects();
-
-    Loader.update('Textures');
-    Ed3d.loadTextures();
-
-    Loader.update('Launch scene');
-    Ed3d.initScene();
-
-    // Create grid
-
-    Ed3d.grid1H  = $.extend({}, Grid.init(100, 0x111E23, 0), {});
-    Ed3d.grid1K  = $.extend({}, Grid.init(1000, 0x22323A, 1000), {});
-    Ed3d.grid1XL = $.extend({}, Grid.infos(10000, 0x22323A, 10000), {});
-
-
-    // Add some scene enhancement
-    Ed3d.skyboxStars();
-
-    // Create HUD
-    HUD.create("ed3dmap");
-
-    // Add galaxy center
-    Loader.update('Add Sagittarius A*');
-    this.Galaxy.addGalaxyCenter();
-
-    // Load systems
-    Loader.update('Loading JSON file');
-    if(this.jsonPath != null)
-    {
-       Ed3d.loadDatasFromFile();
-    }
-    else if(this.jsonContainer != null)
-    {
-       Ed3d.loadDatasFromContainer();
-    }
-    else if($('.ed3d-item').length > 0)
-    {
-       Ed3d.loadDatasFromAttributes();
-    }
-    else if(this.json != null)
-    {
-       Ed3d.loadDatas(this.json);
-       Ed3d.loadDatasComplete();
-       Ed3d.showScene();
-    }
-    else
-    {
-       Loader.update('No JSON found.');
     }
 
-    if(!this.startAnim) {
-      Ed3d.grid1XL.hide();
-      this.Galaxy.milkyway2D.visible = false;
+      /**
+       * Init objects
+       */
+
+    initObject(options) {
+        //-- Init Object
+        // TODO: Initialise Action and Galaxy at the top
+        this.Action = Action;
+        this.Galaxy = Galaxy;
     }
 
-    // Animate
-    animate();
+    /**
+     * Rebuild completely system list and filter (for new JSon content)
+     */
 
-  },
+    rebuild(options) {
 
-  /**
-   * Init Three.js scene
-   */
+        // TODO: initialise Loader
+        Loader.start();
 
-  'loadTextures' : function() {
+        // Remove System & HUD filters
+        this.destroy();
 
-    //-- Load textures for lensflare
-    var texloader = new THREE.TextureLoader();
-
-    //-- Load textures
-    this.textures.flare_white = texloader.load(Ed3d.basePath + "textures/lensflare/flare2.png");
-    this.textures.flare_yellow = texloader.load(Ed3d.basePath + Ed3d.starSprite);
-    this.textures.flare_center = texloader.load(Ed3d.basePath + "textures/lensflare/flare3.png");
-
-    //-- Load sprites
-    Ed3d.material.glow_1 = new THREE.SpriteMaterial({
-      map: this.textures.flare_yellow,
-      color: 0xffffff, transparent: false,
-       fog: true
-    });
-    Ed3d.material.glow_2 = new THREE.SpriteMaterial({
-
-      map: Ed3d.textures.flare_white,
-      transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-      opacity: 0.5
-    });
-
-  },
-
-  'addCustomMaterial' : function (id, color) {
-
-    var color = new THREE.Color('#'+color);
-    this.colors[id] = color;
-
-  },
-
-
-  /**
-   * Init Three.js scene
-   */
-
-  'initScene' : function() {
-
-    container = document.getElementById("ed3dmap");
-
-    //Scene
-    scene = new THREE.Scene();
-    scene.visible = false;
-    /*scene.scale.set(10,10,10);*/
-
-    //camera
-    camera = new THREE.PerspectiveCamera(45, container.offsetWidth / container.offsetHeight, 1, 200000);
-    //camera = new THREE.OrthographicCamera( container.offsetWidth / - 2, container.offsetWidth / 2, container.offsetHeight / 2, container.offsetHeight / - 2, - 500, 1000 );
-
-    camera.position.set(0, 500, 500);
-
-    //HemisphereLight
-    light = new THREE.HemisphereLight(0xffffff, 0xcccccc);
-    light.position.set(-0.2, 0.5, 0.8).normalize();
-    scene.add(light);
-
-    //WebGL Renderer
-    renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true
-    });
-    renderer.setClearColor(0x000000, 1);
-    renderer.setSize(container.offsetWidth, container.offsetHeight);
-    renderer.domElement.style.zIndex = 5;
-    container.appendChild(renderer.domElement);
-
-    //controls
-    controls = new THREE.OrbitControls(camera, container);
-    controls.rotateSpeed = 0.6;
-    controls.zoomSpeed = 2.0;
-    controls.panSpeed = 0.8;
-    controls.maxDistance = 60000;
-    controls.enableZoom=1;controls.enablePan=1;controls.enableDamping=!0;controls.dampingFactor=.3;
-
-
-    // Add Fog
-
-    scene.fog = new THREE.FogExp2(0x0D0D10, 0.000128);
-    renderer.setClearColor(scene.fog.color, 1);
-    Ed3d.fogDensity = scene.fog.density;
-
-  },
-
-  /**
-   * Show the scene when fully loaded
-   */
-
-  'showScene' : function() {
-
-      Loader.stop();
-      scene.visible = true;
-
-  },
-
-  /**
-   * Load Json file to fill map
-   */
-
-  'loadDatasFromFile' : function() {
-
-
-    $.getJSON(this.jsonPath, function(data) {
-
-      Ed3d.loadDatas(data);
-
-    }).done(function() {
-
-      Ed3d.loadDatasComplete();
-
-      Ed3d.showScene();
-
-    });
-  },
-
-  'loadDatasFromContainer' : function() {
-
-    var content = $('#'+this.jsonContainer).html();
-    var json = null;
-
-    try {
-      json = JSON.parse(content);
-    } catch (e) {
-      console.log("Can't load JSon for systems");
-    }
-    if(json != null) Ed3d.loadDatas(json);
-
-    Ed3d.loadDatasComplete();
-
-    Ed3d.showScene();
-
-  },
-
-
-  'loadDatasFromAttributes' : function() {
-
-    var content = $('#'+this.jsonContainer).html();
-    var json = [];
-    $('.ed3d-item').each(function(e) {
-      var objName = $(this).html();
-      var coords = $(this).data('coords').split(",");
-      if(coords.length == 3)
-        json.push({name:objName,coords:{x:coords[0],y:coords[1],z:coords[2]}});
-    });
-
-    if(json != null) Ed3d.loadDatas(json);
-
-    Ed3d.loadDatasComplete();
-
-    Ed3d.showScene();
-
-  },
-
-
-  'loadDatas' : function(data) {
-
-      //-- Init Particle system
-      System.initParticleSystem();
-
-      //-- Load cat filters
-      if(data.categories != undefined) HUD.initFilters(data.categories);
-
-      //-- Check if simple or complex json
-      list = (data.systems !== undefined) ? data.systems : data;
-
-      //-- Init Routes
-
-      Loader.update('Routes...');
-      if(data.routes != undefined) {
-        $.each(data.routes, function(key, route) {
-          Route.initRoute(key, route);
-        });
-      }
-
-      //-- Loop into systems
-
-      Loader.update('Systems...');
-      $.each(list, function(key, val) {
-
-        system = System.create(val);
-        if(system != undefined) {
-          if(val.cat != undefined) Ed3d.addObjToCategories(system,val.cat);
-          if(val.cat != undefined) Ed3d.systems.push(system);
+        // Reload from JSON
+        if (this.jsonPath) {
+            Ed3d.loadDatasFromFile();
+        } else if(this.jsonContainer) {
+            Ed3d.loadDatasFromContainer();
         }
 
-      });
+        this.Action.moveInitalPosition();
 
-      //-- Routes
-
-      if(data.routes != undefined) {
-
-        $.each(data.routes, function(key, route) {
-          Route.createRoute(key, route);
-        });
-
-      }
-
-      //-- Heatmap
-
-      if(data.heatmap != undefined) {
-        Heatmap.create(data.heatmap);
-      }
-
-      //-- Check start position in JSon
-
-      if(Ed3d.startAnim && data.position != undefined) {
-        Ed3d.playerPos = [data.position.x,data.position.y,data.position.z];
-
-        var camX = (parseInt(data.position.x)-500);
-        var camY = (parseInt(data.position.y)+8500);
-        var camZ = (parseInt(data.position.z)-8500);
-        Ed3d.cameraPos = [camX,camY,camZ];
-
-        Action.moveInitalPosition(4000);
-      }
-
-  },
-
-  'loadDatasComplete' : function() {
-
-      System.endParticleSystem();
-      HUD.init();
-      this.Action.init();
-
-  },
-
-  /**
-   * Add an object to a category
-   */
-
-  'addObjToCategories' : function(index, catList) {
-
-    $.each(catList, function(keyArr, idCat) {
-      if(Ed3d.catObjs[idCat] != undefined)
-        Ed3d.catObjs[idCat].push(index);
-    });
-
-  },
-
-  /**
-   * Create a skybox of particle stars
-   */
-
-  'skyboxStars' : function() {
-
-    var sizeStars = 10000;
-
-    var particles = new THREE.Geometry;
-    for (var p = 0; p < 5; p++) {
-      var particle = new THREE.Vector3(
-        Math.random() * sizeStars - (sizeStars / 2),
-        Math.random() * sizeStars - (sizeStars / 2),
-        Math.random() * sizeStars - (sizeStars / 2)
-      );
-      particles.vertices.push(particle);
+        // TODO: initialise Loader
+        Loader.stop();
     }
 
-    var particleMaterial = new THREE.PointsMaterial({
-      color: 0xeeeeee,
-      size: 2
-    });
-    this.starfield = new THREE.Points(particles, particleMaterial);
+    /**
+      * Destroy the 3dmap
+      */
+
+    destroy() {
+
+        Loader.start();
+
+        // Remove System & HUD filters
+        // TODO: Initialise
+        System.remove();
+        HUD.removeFilters();
+        Route.remove();
+        Galaxy.remove();
+
+        Loader.stop();
+
+    }
+
+    /**
+     * Launch
+     */
+
+    launchMap() {
+
+        this.initObjects();
+
+        Loader.update('Textures');
+        this.loadTextures();
+
+        Loader.update('Launch scene');
+        this.initScene();
+
+        // Create grid
+
+        this.grid1H  = Object.assign({}, Grid.init(100, 0x111E23, 0));
+        this.grid1K  =  Object.assign({}, Grid.init(1000, 0x22323A, 1000));
+        this.grid1XL =  Object.assign({}, Grid.infos(10000, 0x22323A, 10000));
+
+        // Add some scene enhancement
+        this.skyboxStars();
+
+        // Create HUD
+        HUD.create("ed3dmap");
+
+        // Add galaxy center
+        Loader.update('Add Sagittarius A*');
+        this.Galaxy.addGalaxyCenter();
+
+        // Load systems
+        Loader.update('Loading JSON file');
+        if (this.jsonPath) {
+            this.loadDatasFromFile();
+        } else if(this.jsonContainer) {
+            this.loadDatasFromContainer();
+        } else if (document.getElementsByClassName('ed3d-item').length > 0) {
+            this.loadDatasFromAttributes();
+        } else if(this.json) {
+            this.loadDatas(this.json);
+            this.loadDatasComplete();
+            this.showScene();
+        } else {
+            Loader.update('No JSON found.');
+        }
+
+        if (!this.startAnim) {
+            this.grid1XL.hide();
+            this.Galaxy.milkyway2D.visible = false;
+        }
+
+        // Animate
+        animate();
+    }
+
+    /**
+     * Load Textures
+     */
+
+    loadTextures() {
+        //-- Load textures for lensflare
+        let texloader = new THREE.TextureLoader();
+
+        //-- Load textures
+        this.textures.flare_white = texloader.load(`${this.basePath}textures/lensflare/flare2.png`);
+        this.textures.flare_yellow = texloader.load(`${this.basePath}${this.starSprite}`);
+        this.textures.flare_center = texloader.load(`${this.basePath}textures/lensflare/flare3.png`);
+
+        //-- Load sprites
+        this.material.glow_1 = new THREE.SpriteMaterial({
+            map: this.textures.flare_yellow,
+            color: 0xffffff,
+            transparent: false,
+            fog: true
+        });
+
+        this.material.glow_2 = new THREE.SpriteMaterial({
+            map: Ed3d.textures.flare_white,
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            opacity: 0.5
+        });
+    }
+
+    addCustomMaterial(id, color) {
+        let color = new THREE.Color(`#${color}`);
+        this.colors[id] = color;
+    },
 
 
-    scene.add(this.starfield);
-  },
+    /**
+     * Init Three.js scene
+     */
+
+    initScene() {
+        container = document.getElementById('ed3dmap');
+
+        // Scene
+        scene = new THREE.Scene();
+        scene.visible = false;
+        /*scene.scale.set(10,10,10);*/
+
+        //  Camera
+        let aspectRatio = container.offsetWidth / container.offsetHeight;
+        camera = new THREE.PerspectiveCamera(45, aspectRatio, 1, 200000);
+        //camera = new THREE.OrthographicCamera( container.offsetWidth / - 2, container.offsetWidth / 2, container.offsetHeight / 2, container.offsetHeight / - 2, - 500, 1000 );
+
+        camera.position.set(0, 500, 500);
+
+        //HemisphereLight
+        light = new THREE.HemisphereLight(0xffffff, 0xcccccc);
+        light.position.set(-0.2, 0.5, 0.8).normalize();
+        scene.add(light);
+
+        //WebGL Renderer
+        renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true
+        });
+        renderer.setClearColor(0x000000, 1);
+        renderer.setSize(container.offsetWidth, container.offsetHeight);
+        renderer.domElement.style.zIndex = 5;
+        container.appendChild(renderer.domElement);
+
+        //controls
+        controls = new THREE.OrbitControls(camera, container);
+        controls.rotateSpeed = 0.6;
+        controls.zoomSpeed = 2.0;
+        controls.panSpeed = 0.8;
+        controls.maxDistance = 60000;
+        controls.enableZoom = 1;
+        controls.enablePan = 1;
+        controls.enableDamping = !0;
+        controls.dampingFactor = .3;
 
 
-  /**
-   * Calc distance from Sol
-   */
+        // Add Fog
+        scene.fog = new THREE.FogExp2(0x0D0D10, 0.000128);
+        renderer.setClearColor(scene.fog.color, 1);
+        this.fogDensity = scene.fog.density;
+    }
 
-  'calcDistSol' : function(target) {
+    /**
+     * Show the scene when fully loaded
+     */
 
-    var dx = target.x;
-    var dy = target.y;
-    var dz = target.z;
+    showScene() {
+        Loader.stop();
+        scene.visible = true;
+    }
 
-    return Math.round(Math.sqrt(dx*dx+dy*dy+dz*dz));
-  }
+    /**
+     * Load Json file to fill map
+     */
+
+    loadDatasFromFile() {
+        let request = new XMLHttpRequest();
+        request.open('GET', this.jsonPath, true);
+
+        request.onload = () => {
+            if (request.status >= 200 && request.status < 400) {
+                let data = JSON.parse(request.responseText);
+                this.loadDatas(data);
+                this.loadDatasComplete();
+                this.showScene();
+            }
+        };
+
+        request.send();
+    }
+
+    loadDatasFromContainer() {
+        let jsonContainer = document.getElementById(this.jsonContainer);
+        let content = jsonContainer.innerHTML;
+        let json = null;
+
+        try {
+            json = JSON.parse(content);
+        } catch (e) {
+            console.error('Cannot load JSON for systems');
+        }
+        if (json) {
+            this.loadDatas(json);
+        }
+        this.loadDatasComplete();
+        this.showScene();
+    }
+
+
+    loadDatasFromAttributes() {
+        let jsonContainer = document.getElementById(this.jsonContainer);
+        let content = jsonContainer.innerHTML;
+        let json = [];
+        let containers = document.getElementsByClassName('ed3d-item');
+        for (let i = 0; i < containers.length; i++) {
+            let cont = containers[i];
+            let objName = cont.innerHTML;
+            let coords = cont.coords.split(',');
+            if (coords.length === 3) {
+                json.push(
+                    {
+                        name:objName,
+                        coords: {
+                            x:coords[0],
+                            y:coords[1],
+                            z:coords[2]
+                        }
+                    }
+                );
+            }
+        }
+
+        if (json) {
+            this.loadDatas(json);
+        }
+        this.loadDatasComplete();
+        this.showScene();
+    }
+
+
+    loadDatas(data) {
+
+        //-- Init Particle system
+        System.initParticleSystem();
+
+        //-- Load cat filters
+        if(data.categories) {
+            HUD.initFilters(data.categories)
+        };
+
+        //-- Check if simple or complex json
+        list = (data.systems !== undefined) ? data.systems : data;
+
+        //-- Init Routes
+
+        Loader.update('Routes...');
+        if (data.routes) {
+            for (let key in data.routes) {
+                Route.initRoute(key, data.routes[key]);
+            }
+        }
+
+        //-- Loop into systems
+
+        Loader.update('Systems...');
+        for (let key in list) {
+            let val = list[key];
+            system = System.create(val);
+            if (system) {
+              if (val.cat) {
+                  this.addObjToCategories(system,val.cat);
+              }
+              if (val.cat) {
+                  this.systems.push(system);
+              }
+            }
+        }
+
+        //-- Routes
+
+        if (data.routes) {
+            for (let key in data.routes) {
+                let route = data.routes[key];
+                Route.createRoute(key, route);
+            }
+        }
+
+          //-- Heatmap
+        if (data.heatmap) {
+            Heatmap.create(data.heatmap);
+        }
+
+        //-- Check start position in JSON
+        if (this.startAnim && data.position) {
+            this.playerPos = [
+                data.position.x,
+                data.position.y,
+                data.position.z
+            ];
+
+            let camX = (parseInt(data.position.x) - 500);
+            let camY = (parseInt(data.position.y) + 8500);
+            let camZ = (parseInt(data.position.z) - 8500);
+            this.cameraPos = [camX, camY, camZ];
+
+            Action.moveInitalPosition(4000);
+        }
+
+    }
+
+    loadDatasComplete() {
+        System.endParticleSystem();
+        HUD.init();
+        this.Action.init();
+    }
+
+    /**
+      * Add an object to a category
+      */
+
+    addObjToCategories(index, catList) {
+        for (let key = in catList) {
+            let idCat = catList[key];
+            if (this.catObjs[idCat]) {
+                this.catObjs[idCat].push(index);
+            }
+        }
+    }
+
+    /**
+      * Create a skybox of particle stars
+      */
+
+    skyboxStars() {
+        let sizeStars = 10000;
+        let particles = new THREE.Geometry;
+        for (let p = 0; p < 5; p++) {
+            let particle = new THREE.Vector3(
+                Math.random() * sizeStars - (sizeStars / 2),
+                Math.random() * sizeStars - (sizeStars / 2),
+                Math.random() * sizeStars - (sizeStars / 2)
+            );
+            particles.vertices.push(particle);
+        }
+
+        let particleMaterial = new THREE.PointsMaterial({
+            color: 0xeeeeee,
+            size: 2
+        });
+        this.starfield = new THREE.Points(particles, particleMaterial);
+
+        scene.add(this.starfield);
+    }
+
+
+    /**
+      * Calc distance from Sol
+      */
+
+    calcDistSol(target) {
+        let dx = target.x;
+        let dy = target.y;
+        let dz = target.z;
+
+        return Math.round(Math.sqrt(dx * dx + dy * dy + dz * dz));
+    }
 
 
 }
