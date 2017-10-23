@@ -1,140 +1,140 @@
 //--
-var camera;
-var controls;
-var scene;
-var light;
-var renderer;
+let camera;
+let controls;
+let scene;
+let light;
+let renderer;
 
-var raycaster;
+let raycaster;
 
-var composer;
+let composer;
 
 //-- Map Vars
-var container;
-var routes = [];
-var lensFlareSel;
+let container;
+let routes = [];
+let lensFlareSel;
 
 
-var Ed3d = {
+class Ed3d {
+    constructor() {
+        this.container = null;
+        this.basePath = './';
 
-  'container'           : null,
-  'basePath'            : './',
+        this.jsonPath = null;
+        this.jsonContainer = null;
+        this.json = null;
 
-  'jsonPath'            : null,
-  'jsonContainer'       : null,
-  'json'                : null,
+        this.grid1H = null;
+        this.grid1K = null;
+        this.grid1XL = null;
 
-  'grid1H'              : null,
-  'grid1K'              : null,
-  'grid1XL'             : null,
+        this.tween = null;
 
-  'tween'               : null,
+        this.globalView = null;
 
-  'globalView'          : true,
+        //-- Fog density save
+        this.fogDensity = null;
 
-  //-- Fog density save
-  'fogDensity'          : null,
+        //-- Defined texts
+        this.textSel = [];
 
-  //-- Defined texts
-  'textSel'             : [],
+        //-- Object list by categories
+        this.catObjs = null;
+        this.catObjsRoutes = [];
 
-  //-- Object list by categories
-  'catObjs'             : [],
-  'catObjsRoutes'       : [],
+        this.material = {
+            trd: new THREE.MeshBasicMaterial({
+                color: 0xffffff
+            }),
+            line: new THREE.LineBasicMaterial({
+                color: 0xcccccc
+            }),
+            white: new THREE.MeshBasicMaterial({
+                color: 0xffffff
+            }),
+            orange: new THREE.MeshBasicMaterial({
+                color: 0xFF9D00
+            }),
+            black: new THREE.MeshBasicMaterial({
+                color: 0x010101
+            }),
+            lightblue: new THREE.MeshBasicMaterial({
+                color: 0x0E7F88
+            }),
+            darkblue: new THREE.MeshBasicMaterial({
+                color: 0x16292B
+            }),
+            selected: new THREE.MeshPhongMaterial({
+                color: 0x0DFFFF
+            }),
+            grey: new THREE.MeshPhongMaterial({
+                color: 0x7EA0A0
+            }),
+            transparent: new THREE.MeshBasicMaterial({
+                color: 0x000000,
+                transparent: true,
+                opacity: 0
+            }),
+            glow_1: null,
+            custom: []
+        };
+        this.starSprite = 'textures/lensflare/star_grey2.png';
 
-  //-- Materials
-  'material'            : {
-    'Trd' : new THREE.MeshBasicMaterial({
-      color: 0xffffff
-    }),
-    'line' : new THREE.LineBasicMaterial({
-      color: 0xcccccc
-    }),
-    'white' : new THREE.MeshBasicMaterial({
-      color: 0xffffff
-    }),
-    'orange' : new THREE.MeshBasicMaterial({
-      color: 0xFF9D00
-    }),
-    'black' : new THREE.MeshBasicMaterial({
-      color: 0x010101
-    }),
-    'lightblue' : new THREE.MeshBasicMaterial({
-      color: 0x0E7F88
-    }),
-    'darkblue' : new THREE.MeshBasicMaterial({
-      color: 0x16292B
-    }),
-    'selected' : new THREE.MeshPhongMaterial({
-      color: 0x0DFFFF
-    }),
-    'grey' : new THREE.MeshPhongMaterial({
-      color: 0x7EA0A0
-    }),
-    'transparent' : new THREE.MeshBasicMaterial({
-      color: 0x000000,
-      transparent: true,
-      opacity: 0
-    }),
-    'glow_1'            : null,
-    'custom'            : []
-  },
+        this.colors = [];
+        this.textures = {};
 
-  'starSprite' : 'textures/lensflare/star_grey2.png',
+        //-- Default color for system sprite
+        this.systemColor = '#eeeeee';
 
-  'colors'              : [],
-  'textures'            : {},
+        //-- HUD
+        this.withHudPanel = false;
+        this.withOptionsPanel = true;
+        this.hudMultipleSelect = true;
 
-  //-- Default color for system sprite
-  'systemColor'         : '#eeeeee',
+        //-- Systems
+        this.systems = [];
 
-  //-- HUD
-  'withHudPanel'        : false,
-  'withOptionsPanel'    : true,
-  'hudMultipleSelect'   : true,
+        //-- Starfield
+        this.starfield = null;
 
-  //-- Systems
-  'systems'             : [],
+        //-- Start animation
+        this.startAnim = true;
 
-  //-- Starfield
-  'starfield'           : null,
+        //-- Scale system effect
+        this.effectScaleSystem = [10, 800];
 
-  //-- Start animation
-  'startAnim'           : true,
+        //-- Graphical Options
+        this.optDistObj = 1500;
 
-  //-- Scale system effect
-  'effectScaleSystem'   : [10,800],
+        //-- Player position
+        this.playerPos = [0, 0, 0];
 
-  //-- Graphical Options
-  'optDistObj'          : 1500,
+        //-- Initial camera position
+        this.cameraPos = null;
 
-  //-- Player position
-  'playerPos'           : [0, 0, 0],
+        //-- Active 2D top view
+        this.isTopView = false;
 
-  //-- Initial camera position
-  'cameraPos'           : null,
+        //-- Show galaxy infos
+        this.showGalaxyInfos = false;
 
-  //-- Active 2D top view
-  'isTopView'           : false,
+        //-- Show names near camera
+        this.showNameNear = false;
 
-  //-- Show galaxy infos
-  'showGalaxyInfos'     : false,
+        //-- Popup mode for click on detail
+        this.popupDetail = false;
 
-  //-- Show names near camera
-  'showNameNear'     : false,
+        //-- Objects
+        this.action = null;
+        this.galaxy = null;
 
-  //-- Popup mode for click on detal
-  'popupDetail'      : false,
+        //-- With button to toggle fullscreen
+        this.withFullscreenToggle = false;
 
-  //-- Objects
-  'Action' : null,
-  'Galaxy' : null,
+        //-- Collapse subcategories (false: don't collapse)
+        this.categoryAutoCollapseSize = false;
+    }
 
-  //-- With button to toggle fullscreen
-  'withFullscreenToggle' : false,
-
-  //-- Collapse subcategories (false: don't collapse)
-  'categoryAutoCollapseSize' : false,
 
   /**
    * Init Ed3d map
