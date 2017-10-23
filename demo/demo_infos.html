@@ -65,8 +65,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r75/three.min.js"></script>
 
   <!-- Launch ED3Dmap -->
-  <link href="css/styles.css" rel="stylesheet" type="text/css" />
-  <script src="js/ed3dmap.min.js?v=6"></script>
+  <link href="../css/styles.css" rel="stylesheet" type="text/css" />
+  <script src="../dist/ed3dmap.min.js"></script>
   <script type="text/javascript">
 
     var d = new Date()
@@ -76,7 +76,7 @@
     Ed3d.init({
         container   : 'edmap',
        // jsonPath    : "http://www.edsm.net/api-v1/systems?coords=1&known=1&startdatetime="+queryDate,
-        jsonPath    : "json_samples/galnet.json",
+        jsonPath    : "./json_samples/galnet.json",
         withHudPanel : false,
         hudMultipleSelect : false,
         effectScaleSystem : [50,10000],
