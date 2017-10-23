@@ -15,7 +15,7 @@ let routes = [];
 let lensFlareSel;
 
 
-class Ed3d {
+export class Ed3dMap {
     constructor() {
         this.container = null;
         this.basePath = './';
@@ -143,6 +143,17 @@ class Ed3d {
 
     init(options) {
         this.options = options;
+
+        // OPTIONS
+        this.container = options.container;
+        this.jsonPath = options.jsonPath;
+        this.withHudPanel = options.withHudPanel;
+        this.hudMultipleSelect = options.hudMultipleSelect;
+        this.effectScaleSystem = options.effectScaleSystem;
+        this.startAnim = options.startAnim;
+        this.showGalaxyInfos = options.showGalaxyInfos;
+        this.cameraPos = options.cameraPos;
+        this.systemColor = options.systemColor;
 
         //-- Init 3D map container
         let mapDiv = document.createElement('div');
@@ -329,10 +340,9 @@ class Ed3d {
     }
 
     addCustomMaterial(id, color) {
-        let color = new THREE.Color(`#${color}`);
+        color = new THREE.Color(`#${color}`);
         this.colors[id] = color;
-    },
-
+    }
 
     /**
      * Init Three.js scene
@@ -545,7 +555,7 @@ class Ed3d {
       */
 
     addObjToCategories(index, catList) {
-        for (let key = in catList) {
+        for (let key in catList) {
             let idCat = catList[key];
             if (this.catObjs[idCat]) {
                 this.catObjs[idCat].push(index);
@@ -594,264 +604,261 @@ class Ed3d {
 
 }
 
+// let Ed3d = new Ed3dMap();
 
-
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-function animate(time) {
+let animate = (time) => {
 
   //rendererStats.update(renderer);
 
-  if(scene.visible == false) {
-    requestAnimationFrame( animate );
-    return;
-  }
+    if (!scene.visible) {
+        requestAnimationFrame(animate);
+        return;
+    }
 
-  refreshWithCamPos();
- //controls.noRotate().set(false);
- //controls.noPan().set(false);
- //controls.minPolarAngle = 0;
- //controls.maxPolarAngle = 0;
+    refreshWithCamPos();
+    //controls.noRotate().set(false);
+    //controls.noPan().set(false);
+    //controls.minPolarAngle = 0;
+    //controls.maxPolarAngle = 0;
 
-  controls.update();
+    controls.update();
 
-  TWEEN.update(time);
+    TWEEN.update(time);
 
-  //-- If 2D top view, lock camera pos
-  if(Ed3d.isTopView) {
-    camera.rotation.set(-Math.PI/2,0,0);
-    camera.position.x = controls.target.x;
-    camera.position.z = controls.target.z;
-  }
-
-
-  renderer.render(scene, camera);
-
-  $('#cx').html(Math.round(controls.target.x));
-  $('#cy').html(Math.round(controls.target.y));
-  $('#cz').html(Math.round(-controls.target.z)); // Reverse z coord
-
-  $('#distsol').html(Ed3d.calcDistSol(controls.target));
-
-  //-- Move starfield with cam
-  Ed3d.starfield.position.set(
-    controls.target.x-(controls.target.x/10)%4000,
-    controls.target.y-(controls.target.y/10)%4000,
-    controls.target.z-(controls.target.z/10)%4000
-  );
-
-  //-- Change selection cursor size depending on camera distance
-
-  var scale = distanceFromTarget(camera)/200;
-
-  this.Action.updateCursorSize(scale);
-
-  HUD.rotateText('system');
-  HUD.rotateText('coords');
-  HUD.rotateText('system_hover');
+    //-- If 2D top view, lock camera pos
+    if(Ed3d.isTopView) {
+        camera.rotation.set(-Math.PI/2,0,0);
+        camera.position.x = controls.target.x;
+        camera.position.z = controls.target.z;
+    }
 
 
-  //-- Zoom on on galaxy effect
-  this.Action.sizeOnScroll(scale);
-
-  this.Galaxy.infosUpdateCallback(scale);
-
-  if(scale>25) {
-
-    enableFarView(scale);
-
-  } else {
-
-    disableFarView(scale);
-
-  }
-
-  this.Action.updatePointClickRadius(scale);
-
-  requestAnimationFrame( animate );
+    renderer.render(scene, camera);
 
 
+    document.getElementById('cx').innerHTML = Math.round(controls.target.x);
+    document.getElementById('cy').innerHTML = Math.round(controls.target.y);
+    document.getElementById('cz').innerHTML = Math.round(-controls.target.z);   // Reverse z coord
+
+    document.getElementById('distsol').innerHTML = Ed3d.calcDistSol(controls.target);
+
+    //-- Move starfield with cam
+    Ed3d.starfield.position.set(
+        controls.target.x - (controls.target.x / 10) % 4000,
+        controls.target.y - (controls.target.y / 10) % 4000,
+        controls.target.z - (controls.target.z / 10) % 4000
+    );
+
+    //-- Change selection cursor size depending on camera distance
+
+    let scale = distanceFromTarget(camera) / 200;
+
+    this.Action.updateCursorSize(scale);
+
+    HUD.rotateText('system');
+    HUD.rotateText('coords');
+    HUD.rotateText('system_hover');
+
+    //-- Zoom on on galaxy effect
+    this.Action.sizeOnScroll(scale);
+
+    this.Galaxy.infosUpdateCallback(scale);
+
+    if (scale > 25) {
+        enableFarView(scale);
+    } else {
+        disableFarView(scale);
+    }
+
+    this.Action.updatePointClickRadius(scale);
+
+    requestAnimationFrame(animate);
 }
 
-var isFarView = false;
+let isFarView = false;
 
-function enableFarView (scale, withAnim) {
+let enableFarView = (scale, withAnim) => {
+    if (isFarView || !this.Galaxy) {
+        return;
+    }
+    withAnim = withAnim || true;
 
-  if(isFarView || this.Galaxy == null) return;
-  if(withAnim == undefined) withAnim = true;
+    isFarView = true;
 
-  isFarView = true;
+    //-- Scale change animation
+    let scaleFrom = {
+        zoom:25
+    };
+    let scaleTo = {
+        zoom:500
+    };
+    if (withAnim) {
 
-  //-- Scale change animation
-  var scaleFrom = {zoom:25};
-  var scaleTo = {zoom:500};
-  if(withAnim) {
+        let obj = this;
 
-    var obj = this;
+        //controls.enabled = false;
+        Ed3d.tween = new TWEEN.Tween(scaleFrom, {override: true}).to(scaleTo, 500)
+            .start()
+            .onUpdate(() => {
+                obj.Galaxy.milkyway[0].material.size = scaleFrom.zoom;
+                obj.Galaxy.milkyway[1].material.size = scaleFrom.zoom * 4;
+            });
+    } else {
+        this.Galaxy.milkyway[0].material.size = scaleTo;
+        this.Galaxy.milkyway[1].material.size = scaleTo * 4;
+    }
 
-    //controls.enabled = false;
-    Ed3d.tween = new TWEEN.Tween(scaleFrom, {override:true}).to(scaleTo, 500)
-      .start()
-      .onUpdate(function () {
-        obj.Galaxy.milkyway[0].material.size = scaleFrom.zoom;
-        obj.Galaxy.milkyway[1].material.size = scaleFrom.zoom*4;
-      });
+    //-- Enable 2D galaxy
+    this.Galaxy.milkyway2D.visible = true;
+    this.Galaxy.infosShow();
 
-  } else {
-    this.Galaxy.milkyway[0].material.size = scaleTo;
-    this.Galaxy.milkyway[1].material.size = scaleTo*4;
-  }
+    //this.Galaxy.obj.scale.set(20,20,20);
 
-  //-- Enable 2D galaxy
-  this.Galaxy.milkyway2D.visible = true;
-  this.Galaxy.infosShow();
+    this.Action.updateCursorSize(60);
 
-
-  //this.Galaxy.obj.scale.set(20,20,20);
-
-  this.Action.updateCursorSize(60);
-
-  Ed3d.grid1H.hide();
-  Ed3d.grid1K.hide();
-  Ed3d.grid1XL.show();
-  Ed3d.starfield.visible = false;
-  scene.fog.density = 0.000009;
-
+    Ed3d.grid1H.hide();
+    Ed3d.grid1K.hide();
+    Ed3d.grid1XL.show();
+    Ed3d.starfield.visible = false;
+    scene.fog.density = 0.000009;
 }
 
-function disableFarView(scale, withAnim) {
+let disableFarView = (scale, withAnim) => {
 
-  if(!isFarView) return;
-  if(withAnim == undefined) withAnim = true;
+    if(!isFarView) {
+        return;
+    }
+    withAnim = withAnim || true;
 
-  isFarView = false;
-  var oldScale = parseFloat(1/(25/3));
+    isFarView = false;
+    let oldScale = parseFloat(1 / (25 / 3));
 
+    //-- Scale change animation
 
-  //-- Scale change animation
+    let scaleFrom = {
+        zoom:250
+    };
+    let scaleTo = {
+        zoom:64
+    };
+    if (withAnim) {
+        let obj = this;
+        //controls.enabled = false;
+        Ed3d.tween = new TWEEN.Tween(scaleFrom, {override: true}).to(scaleTo, 500)
+            .start()
+            .onUpdate(() => {
+                obj.Galaxy.milkyway[0].material.size = scaleFrom.zoom;
+                obj.Galaxy.milkyway[1].material.size = scaleFrom.zoom;
+            });
+    } else {
+        this.Galaxy.milkyway[0].material.size = scaleTo;
+        this.Galaxy.milkyway[1].material.size = scaleTo;
+    }
 
-  var scaleFrom = {zoom:250};
-  var scaleTo = {zoom:64};
-  if(withAnim) {
+    //-- Disable 2D galaxy
+    this.Galaxy.milkyway2D.visible = false;
+    this.Galaxy.infosHide();
 
-    var obj = this;
+    //-- Show element
+    this.Galaxy.milkyway[0].material.size = 16;
 
-    //controls.enabled = false;
-    Ed3d.tween = new TWEEN.Tween(scaleFrom, {override:true}).to(scaleTo, 500)
-      .start()
-      .onUpdate(function () {
-        obj.Galaxy.milkyway[0].material.size = scaleFrom.zoom;
-        obj.Galaxy.milkyway[1].material.size = scaleFrom.zoom;
-      });
+    //--
+    camera.scale.set(1,1,1);
 
-  } else {
-    this.Galaxy.milkyway[0].material.size = scaleTo;
-    this.Galaxy.milkyway[1].material.size = scaleTo;
-  }
+    this.Action.updateCursorSize(1);
 
-  //-- Disable 2D galaxy
-  this.Galaxy.milkyway2D.visible = false;
-  this.Galaxy.infosHide();
-
-  //-- Show element
-  this.Galaxy.milkyway[0].material.size = 16;
-
-  //--
-  camera.scale.set(1,1,1);
-
-  this.Action.updateCursorSize(1);
-
-  Ed3d.grid1H.show();
-  Ed3d.grid1K.show();
-  Ed3d.grid1XL.hide();
-  Ed3d.starfield.visible = true;
-  scene.fog.density = Ed3d.fogDensity;
-
+    Ed3d.grid1H.show();
+    Ed3d.grid1K.show();
+    Ed3d.grid1XL.hide();
+    Ed3d.starfield.visible = true;
+    scene.fog.density = Ed3d.fogDensity;
 }
 
 
-function render() {
-  renderer.render(scene, camera);
+let render = () => {
+    renderer.render(scene, camera);
 }
 
-function refresh3dMapSize () {
-  if(renderer != undefined) {
-    var width = container.offsetWidth;
-    var height = container.offsetHeight;
-    if(width<100) width = 100;
-    if(height<100) height = 100;
-    renderer.setSize(width, height);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-  }
+let refresh3dMapSize = () => {
+    if(renderer) {
+        let width = container.offsetWidth;
+        let height = container.offsetHeight;
+        if (width < 100) {
+            width = 100;
+        }
+        if (height < 100) {
+            height = 100;
+        }
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    }
 }
 
-
-window.addEventListener('resize', function () {
-  refresh3dMapSize();
+window.addEventListener('resize', () => {
+    refresh3dMapSize();
 });
-
-
-
-
-
-
 
 
 //--------------------------------------------------------------------------
 // Test perf
 
 
-function distance (v1, v2) {
-    var dx = v1.position.x - v2.position.x;
-    var dy = v1.position.y - v2.position.y;
-    var dz = v1.position.z - v2.position.z;
+let distance = (v1, v2) => {
+    let dx = v1.position.x - v2.position.x;
+    let dy = v1.position.y - v2.position.y;
+    let dz = v1.position.z - v2.position.z;
 
-    return Math.round(Math.sqrt(dx*dx+dy*dy+dz*dz));
+    return Math.round(Math.sqrt(dx * dx + dy * dy + dz * dz));
 }
 
-function distanceFromTarget (v1) {
-    var dx = v1.position.x - controls.target.x;
-    var dy = v1.position.y - controls.target.y;
-    var dz = v1.position.z - controls.target.z;
+let distanceFromTarget = (v1) => {
+    let dx = v1.position.x - controls.target.x;
+    let dy = v1.position.y - controls.target.y;
+    let dz = v1.position.z - controls.target.z;
 
-    return Math.round(Math.sqrt(dx*dx+dy*dy+dz*dz));
+    return Math.round(Math.sqrt(dx * dx + dy * dy + dz * dz));
 }
 
-var camSave = {'x':0,'y':0,'z':0};
+let camSave = {x: 0, y: 0, z: 0};
 
+let refreshWithCamPos = () => {
 
-function refreshWithCamPos() {
+    let d = new Date();
+    let n = d.getTime();
 
-  var d = new Date();
-  var n = d.getTime();
+    //-- Refresh only every 5 sec
+    if (n % 1 != 0) {
+        return;
+    }
 
-  //-- Refresh only every 5 sec
-  if(n % 1 != 0) return;
+    Ed3d.grid1H.addCoords();
+    Ed3d.grid1K.addCoords();
 
-  Ed3d.grid1H.addCoords();
-  Ed3d.grid1K.addCoords();
+    //-- Refresh only if the camera moved
+    let p = Ed3d.optDistObj / 2;
+    if (
+        camSave.x == Math.round(camera.position.x/p) * p &&
+        camSave.y == Math.round(camera.position.y/p) * p &&
+        camSave.z == Math.round(camera.position.z/p) * p
+    ) {
+        return;
 
-  //-- Refresh only if the camera moved
-  var p = Ed3d.optDistObj/2;
-  if(
-    camSave.x == Math.round(camera.position.x/p)*p &&
-    camSave.y == Math.round(camera.position.y/p)*p &&
-    camSave.z == Math.round(camera.position.z/p)*p
-  ) return;
+    }
 
-  //-- Save new pos
-
-  camSave.x = Math.round(camera.position.x/p)*p;
-  camSave.y = Math.round(camera.position.y/p)*p;
-  camSave.z = Math.round(camera.position.z/p)*p;
+    //-- Save new pos
+    camSave.x = Math.round(camera.position.x / p) * p;
+    camSave.y = Math.round(camera.position.y / p) * p;
+    camSave.z = Math.round(camera.position.z / p) * p;
 
 }
 
-
+// TODO: Move to own file
 var Loader = {
 
   /**

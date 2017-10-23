@@ -66,12 +66,15 @@
 
   <!-- Launch ED3Dmap -->
   <link href="../css/styles.css" rel="stylesheet" type="text/css" />
-  <script src="../dist/ed3dmap.min.js"></script>
+  <script src="../dist/ed3dmap.js"></script>
+  <!-- <script src="../dist/ed3dmap.min.js"></script> -->
   <script type="text/javascript">
 
     var d = new Date()
     d.setDate(d.getDate() - 1);
     var queryDate = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':00:00';
+
+    var Ed3d = new Ed3dMap();
 
     Ed3d.init({
         container   : 'edmap',
