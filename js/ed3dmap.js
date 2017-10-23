@@ -15,7 +15,7 @@ let routes = [];
 let lensFlareSel;
 
 
-export class Ed3dMap {
+export default class Ed3dMap {
     constructor() {
         this.container = null;
         this.basePath = './';
@@ -158,7 +158,7 @@ export class Ed3dMap {
         //-- Init 3D map container
         let mapDiv = document.createElement('div');
         mapDiv.id = 'ed3dmap';
-        let containerEl = documet.getElementById(this.container);
+        let containerEl = document.getElementById(this.container);
         containerEl.appendChild(mapDiv);
 
         //-- Load dependencies
@@ -240,18 +240,14 @@ export class Ed3dMap {
       */
 
     destroy() {
-
         Loader.start();
-
         // Remove System & HUD filters
         // TODO: Initialise
         System.remove();
         HUD.removeFilters();
         Route.remove();
         Galaxy.remove();
-
         Loader.stop();
-
     }
 
     /**

@@ -66,30 +66,8 @@
 
   <!-- Launch ED3Dmap -->
   <link href="../css/styles.css" rel="stylesheet" type="text/css" />
-  <script src="../dist/ed3dmap.js"></script>
+  <!-- <script src="../dist/ed3dmap.js"></script> -->
   <!-- <script src="../dist/ed3dmap.min.js"></script> -->
-  <script type="text/javascript">
-
-    var d = new Date()
-    d.setDate(d.getDate() - 1);
-    var queryDate = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+' '+d.getHours()+':00:00';
-
-    var Ed3d = new Ed3dMap();
-
-    Ed3d.init({
-        container   : 'edmap',
-       // jsonPath    : "http://www.edsm.net/api-v1/systems?coords=1&known=1&startdatetime="+queryDate,
-        jsonPath    : "./json_samples/galnet.json",
-        withHudPanel : false,
-        hudMultipleSelect : false,
-        effectScaleSystem : [50,10000],
-        startAnim: false,
-        showGalaxyInfos: true,
-        cameraPos: [25,14100,-12900],
-        systemColor: '#FF9D00'
-    });
-
-  </script>
-
+  <script src="../dist/demo_info.js"></script>
 </body>
 </html>
